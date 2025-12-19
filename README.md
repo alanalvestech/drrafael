@@ -29,7 +29,13 @@ GEMINI_API_KEY=sua_chave_aqui
 
 RAILS_MAX_THREADS=5
 PORT=3000
+SECRET_KEY_BASE=gerar_com_rails_secret
 ```
+
+**Para produção (Railway):**
+- Configure a variável de ambiente `SECRET_KEY_BASE` no painel do Railway
+- Gere uma chave segura com: `rails secret`
+- Configure também `RAILS_ENV=production` (geralmente já vem configurado)
 
 3. Criar banco de dados e executar migrations:
 ```bash
