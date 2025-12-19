@@ -16,13 +16,6 @@ namespace :data do
     end
 
     puts "Encontrados #{pdf_files.length} arquivo(s) PDF"
-    
-    api_key = ENV.fetch("GEMINI_API_KEY")
-    llm = Langchain::LLM::GoogleGemini.new(api_key: api_key)
-    chunker = Langchain::Chunker::RecursiveText.new(
-      chunk_size: 1000,
-      chunk_overlap: 200
-    )
 
     pdf_files.each_with_index do |pdf_path, index|
       filename = File.basename(pdf_path)
@@ -43,7 +36,12 @@ namespace :data do
         end
 
         # Chunking
-        chunks = chunker.chunks(text)
+        chunker = Langchain::Chunker::RecursiveText.new(
+          text,
+          chunk_size: 1000,
+          chunk_overlap: 200
+        )
+        chunks = chunker.chunks
         puts "  📄 Texto extraído: #{text.length} caracteres"
         puts "  ✂️  Dividido em #{chunks.length} chunk(s)"
 
@@ -52,22 +50,15 @@ namespace :data do
           print "  🔄 Processando chunk #{chunk_index + 1}/#{chunks.length}... "
           
           begin
-            # Gerar embedding
-            embedding_response = llm.embed(
-              text: chunk,
-              model: "text-embedding-004"
-            )
+            # Extrair texto do chunk (pode ser objeto Langchain::Chunk ou string)
+            chunk_text = chunk.is_a?(String) ? chunk : (chunk.respond_to?(:text) ? chunk.text : chunk.to_s)
             
-            embedding = embedding_response.dig("embedding") || embedding_response
-            
-            unless embedding.is_a?(Array) && embedding.length == 768
-              puts "❌ Erro: Embedding inválido (esperado array de 768 elementos)"
-              next
-            end
+            # Gerar embedding usando serviço direto (contorna bug do langchainrb)
+            embedding = GeminiEmbeddingService.embed(chunk_text, model: "text-embedding-004")
 
             # Salvar no banco
             Document.create!(
-              content: chunk,
+              content: chunk_text,
               filename: filename,
               embedding: embedding,
               metadata: {
@@ -79,8 +70,8 @@ namespace :data do
             
             print "✅\n"
           rescue => e
-            puts "❌ Erro: #{e.message}"
-            Rails.logger.error "Erro ao processar chunk: #{e.message}\n#{e.backtrace.first(3).join("\n")}"
+            puts "❌ Erro: #{e.class} - #{e.message}"
+            Rails.logger.error "Erro ao processar chunk: #{e.class} - #{e.message}\n#{e.backtrace.first(5).join("\n")}"
           end
         end
 

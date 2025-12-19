@@ -9,13 +9,15 @@ class WebhookController < ApplicationController
     Rails.logger.info "Body recebido: #{raw_body.length} bytes"
     STDOUT.puts "Body recebido: #{raw_body.length} bytes"
     
+    response_text = nil
+    
     if raw_body.present?
       data = JSON.parse(raw_body)
       Rails.logger.info "JSON parseado com sucesso"
       STDOUT.puts "JSON parseado com sucesso"
       
       handler = WhatsappMessageHandler.new(data.with_indifferent_access)
-      handler.process
+      response_text = handler.process
     else
       Rails.logger.info "Body vazio, usando params"
       STDOUT.puts "Body vazio"
@@ -23,7 +25,12 @@ class WebhookController < ApplicationController
     
     Rails.logger.info "=== RETORNANDO RESPOSTA ==="
     STDOUT.puts "=== RETORNANDO RESPOSTA ==="
-    render json: { status: "ok" }, status: :ok
+    
+    # Retornar a resposta gerada para facilitar testes via Insomnia
+    render json: { 
+      status: "ok", 
+      response: response_text 
+    }, status: :ok
   rescue => e
     Rails.logger.error "ERRO: #{e.class} - #{e.message}"
     STDOUT.puts "ERRO: #{e.class} - #{e.message}"

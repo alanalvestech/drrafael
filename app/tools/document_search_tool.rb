@@ -1,4 +1,4 @@
-class DocumentSearchTool < RubyLlm::Tool
+class DocumentSearchTool
   def self.name
     "document_search"
   end
@@ -7,16 +7,16 @@ class DocumentSearchTool < RubyLlm::Tool
     "Busca documentos jurídicos relevantes na base de conhecimento do Dr. Rafael"
   end
 
-  def self.parameters
+  def self.parameters_schema
     {
-      type: "object",
-      properties: {
-        query: {
-          type: "string",
-          description: "Consulta ou pergunta sobre leis, processos ou documentos jurídicos"
+      "type" => "OBJECT",
+      "properties" => {
+        "query" => {
+          "type" => "STRING",
+          "description" => "Consulta ou pergunta sobre leis, processos ou documentos jurídicos"
         }
       },
-      required: ["query"]
+      "required" => ["query"]
     }
   end
 
@@ -34,4 +34,3 @@ class DocumentSearchTool < RubyLlm::Tool
     formatted_results.join("\n\n")
   end
 end
-

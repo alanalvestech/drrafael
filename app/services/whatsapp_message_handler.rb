@@ -6,11 +6,15 @@ class WhatsappMessageHandler
   def process
     message = extract_message
     Rails.logger.info "Mensagem extraída: #{message.inspect}"
-    return unless message
+    return nil unless message
     
     response = WhatsappResponder.new(message).respond
     Rails.logger.info "Resposta gerada: #{response.inspect}"
+    
+    # TODO: Implementar envio de resposta via SDK do WhatsApp
+    # Por enquanto, retornar a resposta para o controller
     send_response(response) if response
+    response
   end
 
   private
