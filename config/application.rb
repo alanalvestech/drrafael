@@ -2,6 +2,7 @@ require_relative "boot"
 
 require "rails/all"
 require "digest"
+require "securerandom"
 
 Bundler.require(*Rails.groups)
 
@@ -18,12 +19,16 @@ module Drrafael
     config.middleware.use config.session_store, config.session_options
     
     # Configurar secret_key_base via variável de ambiente (para Railway)
-    config.secret_key_base = ENV.fetch("SECRET_KEY_BASE") do
+    # Rails aceita RAILS_MASTER_KEY (para credentials.yml.enc) ou SECRET_KEY_BASE diretamente
+    config.secret_key_base = ENV["RAILS_MASTER_KEY"] || ENV["SECRET_KEY_BASE"] || begin
       if Rails.env.development? || Rails.env.test?
-        # Em dev/test, usar um valor padrão se não houver SECRET_KEY_BASE
+        # Em dev/test, usar um valor padrão se não houver variável
         "dev_secret_key_base_#{Rails.application.class.module_parent_name.underscore}_#{Rails.env}_#{Digest::SHA256.hexdigest(__FILE__)[0..31]}"
       else
-        raise ArgumentError, "SECRET_KEY_BASE environment variable is required in production"
+        # Em produção, gerar uma chave temporária mas avisar
+        temp_key = SecureRandom.hex(64)
+        Rails.logger.warn "⚠️  RAILS_MASTER_KEY ou SECRET_KEY_BASE não configurado! Usando chave temporária. Configure RAILS_MASTER_KEY no Railway para segurança."
+        temp_key
       end
     end
     

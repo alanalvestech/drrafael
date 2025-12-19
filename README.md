@@ -33,9 +33,10 @@ SECRET_KEY_BASE=gerar_com_rails_secret
 ```
 
 **Para produção (Railway):**
-- Configure a variável de ambiente `SECRET_KEY_BASE` no painel do Railway
+- Configure a variável de ambiente `RAILS_MASTER_KEY` no painel do Railway
 - Gere uma chave segura com: `rails secret`
 - Configure também `RAILS_ENV=production` (geralmente já vem configurado)
+- **Nota**: O código também aceita `SECRET_KEY_BASE` como alternativa
 
 3. Criar banco de dados e executar migrations:
 ```bash
