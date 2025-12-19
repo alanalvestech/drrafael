@@ -27,7 +27,7 @@ module Drrafael
       else
         # Em produção, gerar uma chave temporária mas avisar
         temp_key = SecureRandom.hex(64)
-        Rails.logger.warn "⚠️  RAILS_MASTER_KEY ou SECRET_KEY_BASE não configurado! Usando chave temporária. Configure RAILS_MASTER_KEY no Railway para segurança."
+        STDERR.puts "⚠️  RAILS_MASTER_KEY ou SECRET_KEY_BASE não configurado! Usando chave temporária. Configure RAILS_MASTER_KEY no Railway para segurança."
         temp_key
       end
     end
