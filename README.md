@@ -1,6 +1,12 @@
 # DrRafael - Agente WhatsApp IA
 
-Projeto Rails minimalista para agente de IA no WhatsApp.
+Projeto Rails 8 com chatbot jurídico usando arquitetura híbrida: `langchainrb` para embeddings e `ruby_llm` para agente conversacional.
+
+## Arquitetura
+
+- **langchainrb**: Processa PDFs, gera embeddings (Gemini text-embedding-004) e busca vetorial no PostgreSQL
+- **ruby_llm**: Gerencia o fluxo conversacional (Gemini 1.5 Flash) e decide quando buscar documentos via Tool Use
+- **neighbor**: Facilita busca de vizinhos mais próximos no PostgreSQL com extensão `vector`
 
 ## Setup
 
@@ -19,19 +25,24 @@ WHATSAPP_TOKEN=
 WHATSAPP_PHONE_NUMBER_ID=
 WHATSAPP_VERIFY_TOKEN=
 
-AI_API_KEY=
-AI_API_URL=
+GEMINI_API_KEY=sua_chave_aqui
 
 RAILS_MAX_THREADS=5
 PORT=3000
 ```
 
-3. Criar banco de dados:
+3. Criar banco de dados e executar migrations:
 ```bash
 rails db:create db:migrate
 ```
 
-4. Iniciar servidor:
+4. Ingerir documentos PDF:
+```bash
+# Coloque seus PDFs em storage/pdfs/
+rails data:ingest
+```
+
+5. Iniciar servidor:
 ```bash
 bin/dev
 ```
@@ -43,7 +54,17 @@ bin/dev
 
 ## Estrutura
 
-- `app/services/` - Lógica de negócio (WhatsappMessageHandler, AiAgentService)
+- `app/models/` - Models (Document com busca semântica)
+- `app/services/` - Lógica de negócio (WhatsappMessageHandler, WhatsappResponder)
+- `app/tools/` - Tools para ruby_llm (DocumentSearchTool)
 - `app/controllers/` - Controllers minimalistas
-- `app/concerns/` - Código compartilhado
+- `lib/tasks/` - Rake tasks (data:ingest)
+- `storage/pdfs/` - Diretório para PDFs a serem processados
+
+## Uso
+
+1. Coloque seus PDFs jurídicos em `storage/pdfs/`
+2. Execute `rails data:ingest` para processar e gerar embeddings
+3. Envie mensagens via webhook do WhatsApp
+4. O agente busca documentos relevantes automaticamente quando necessário
 

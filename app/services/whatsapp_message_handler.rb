@@ -8,7 +8,7 @@ class WhatsappMessageHandler
     Rails.logger.info "Mensagem extraída: #{message.inspect}"
     return unless message
     
-    response = AiAgentService.new(message).respond
+    response = WhatsappResponder.new(message).respond
     Rails.logger.info "Resposta gerada: #{response.inspect}"
     send_response(response) if response
   end
