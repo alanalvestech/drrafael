@@ -3,7 +3,7 @@ require 'uri'
 require 'json'
 require 'base64'
 
-class OpenAIAudioService
+class OpenaiAudioService
   API_BASE_URL = "https://api.openai.com/v1"
 
   def self.transcribe(audio_data, mime_type: "audio/ogg")
