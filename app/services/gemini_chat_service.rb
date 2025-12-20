@@ -8,7 +8,7 @@ class GeminiChatService
   # Usar v1beta para garantir suporte a ferramentas e instruções de sistema
   API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
 
-  def self.chat(message, system_prompt: nil, tools: [])
+  def self.chat(message, system_prompt: nil, tools: [], conversation_history: [])
     api_key = ENV.fetch("GEMINI_API_KEY")
     # Tentar modelos em ordem de preferência
     # Começar com modelos mais recentes que suportam tools
@@ -17,7 +17,7 @@ class GeminiChatService
     last_error = nil
     models_to_try.each do |model|
       begin
-        return chat_with_model(message, system_prompt, tools, api_key, model)
+        return chat_with_model(message, system_prompt, tools, api_key, model, conversation_history)
       rescue => e
         last_error = e
         Rails.logger.warn "Modelo #{model} falhou: #{e.message}"
@@ -29,18 +29,20 @@ class GeminiChatService
     raise last_error if last_error
   end
   
-  def self.chat_with_model(message, system_prompt, tools, api_key, model)
+  def self.chat_with_model(message, system_prompt, tools, api_key, model, conversation_history = [])
     
     uri = URI("#{API_BASE_URL}/models/#{model}:generateContent?key=#{api_key}")
     
-    # Construir payload
+    # Construir payload com histórico de conversa
+    contents = conversation_history.dup
+    # Adicionar mensagem atual
+    contents << {
+      "role" => "user",
+      "parts" => [{ "text" => message }]
+    }
+    
     payload = {
-      "contents" => [
-        {
-          "role" => "user",
-          "parts" => [{ "text" => message }]
-        }
-      ]
+      "contents" => contents
     }
     
     # System instruction (formato oficial v1beta)

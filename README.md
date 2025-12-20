@@ -21,12 +21,17 @@ DATABASE_USER=postgres
 DATABASE_PASSWORD=
 DATABASE_HOST=localhost
 
-# UAZAPI WhatsApp
-UAZAPI_BASE_URL=https://api.uazapi.com
-UAZAPI_INSTANCE_ID=
-UAZAPI_TOKEN=
+# Z-API WhatsApp
+# Obtenha esses valores no painel do Z-API (https://app.z-api.io)
+ZAPI_INSTANCE_ID=seu_instance_id_aqui
+ZAPI_TOKEN=seu_token_aqui
+ZAPI_CLIENT_TOKEN=seu_client_token_aqui  # Token de segurança da conta (obrigatório)
+ZAPI_BASE_URL=https://api.z-api.io  # opcional, já é o padrão
 
 GEMINI_API_KEY=sua_chave_aqui
+OPENAI_API_KEY=sua_chave_openai_aqui  # Para transcrição de áudio (Whisper)
+ELEVENLABS_API_KEY=sua_chave_elevenlabs_aqui  # Para geração de áudio (text-to-speech)
+ELEVENLABS_VOICE_ID=21m00Tcm4TlvDq8ikWAM  # Opcional, voz padrão em português
 
 RAILS_MAX_THREADS=5
 PORT=3000
@@ -58,7 +63,7 @@ bin/dev
 ## Endpoints
 
 - `GET /health` - Health check
-- `POST /webhook/whatsapp` - Webhook para receber mensagens do WhatsApp
+- `POST /webhook/whatsapp` - Webhook para receber mensagens do Z-API
 
 ## Estrutura
 
@@ -73,6 +78,20 @@ bin/dev
 
 1. Coloque seus PDFs jurídicos em `storage/pdfs/`
 2. Execute `rails data:ingest` para processar e gerar embeddings
-3. Envie mensagens via webhook do WhatsApp
-4. O agente busca documentos relevantes automaticamente quando necessário
+3. Configure o webhook no Z-API apontando para `https://seu-dominio.com/webhook/whatsapp`
+4. Envie mensagens via WhatsApp
+5. O agente busca documentos relevantes automaticamente quando necessário
+
+## Configuração do Z-API
+
+1. Crie uma conta no [Z-API](https://www.z-api.io)
+2. Configure as variáveis de ambiente `ZAPI_INSTANCE_ID` e `ZAPI_TOKEN`
+3. Configure o webhook no painel do Z-API apontando para `/webhook/whatsapp`
+4. Teste enviando uma mensagem
+
+**Vantagens do Z-API:**
+- ✅ Documentação mais clara
+- ✅ Suporte técnico nacional
+- ✅ Melhor tratamento de mídia (áudio pode vir já processado)
+- ✅ API mais estável
 

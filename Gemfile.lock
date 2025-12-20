@@ -280,6 +280,7 @@ DEPENDENCIES
   dotenv-rails
   inertia_rails
   langchainrb (>= 0.5.0)
+  multipart-post
   neighbor
   pdf-reader
   pg (~> 1.1)

@@ -1,3 +1,5 @@
+require_relative '../services/whatsapp_message_handler'
+
 class WebhookController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:whatsapp]
   
@@ -19,14 +21,13 @@ class WebhookController < ApplicationController
       handler = WhatsappMessageHandler.new(data.with_indifferent_access)
       response_text = handler.process
     else
-      Rails.logger.info "Body vazio, usando params"
+      Rails.logger.info "Body vazio"
       STDOUT.puts "Body vazio"
     end
     
     Rails.logger.info "=== RETORNANDO RESPOSTA ==="
     STDOUT.puts "=== RETORNANDO RESPOSTA ==="
     
-    # Retornar a resposta gerada para facilitar testes via Insomnia
     render json: { 
       status: "ok", 
       response: response_text 

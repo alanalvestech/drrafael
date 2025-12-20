@@ -12,6 +12,7 @@ gem "langchainrb", ">= 0.5.0"
 gem "ruby_llm"
 gem "neighbor"
 gem "pdf-reader"
+gem "multipart-post" # Para upload de arquivos na API OpenAI
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"

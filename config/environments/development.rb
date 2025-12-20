@@ -15,5 +15,13 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
   config.active_support.report_deprecations = false
   config.active_record.dump_schema_after_migration = false
+  
+  # Permitir hosts do ngrok e outros serviços de tunnel em desenvolvimento
+  config.hosts << /.*\.ngrok-free\.app/
+  config.hosts << /.*\.ngrok\.io/
+  config.hosts << /.*\.ngrok\.app/
+  # Permitir localhost e IPs locais
+  config.hosts << "localhost"
+  config.hosts << /.*\.local/
 end
 

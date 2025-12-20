@@ -19,7 +19,15 @@ namespace :data do
 
     pdf_files.each_with_index do |pdf_path, index|
       filename = File.basename(pdf_path)
-      puts "\n[#{index + 1}/#{pdf_files.length}] Processando: #{filename}"
+      puts "\n[#{index + 1}/#{pdf_files.length}] Verificando: #{filename}"
+      
+      # Verificar se já foi processado
+      if Document.where(filename: filename).exists?
+        puts "  ⏭️  Já processado, pulando..."
+        next
+      end
+      
+      puts "  🔄 Processando..."
       
       begin
         # Extrair texto do PDF
