@@ -1,6 +1,6 @@
 require 'net/http'
 require 'uri'
-require_relative 'openai_audio_service'
+require_relative 'open_ai_audio_service'
 require_relative 'whatsapp_sender'
 require_relative 'eleven_labs_audio_service'
 require_relative 'audio_response_formatter'
